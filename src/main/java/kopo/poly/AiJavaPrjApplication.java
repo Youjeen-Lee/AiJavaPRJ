@@ -10,10 +10,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor // git 연동이 왜 안돼???ㅇㅇㅇㅇㅇㅇ
+@RequiredArgsConstructor
 @SpringBootApplication
 public class AiJavaPrjApplication implements CommandLineRunner {
 
@@ -87,26 +88,95 @@ public class AiJavaPrjApplication implements CommandLineRunner {
 //        log.info("가장 많이 사용된 단어는? : \n" + sortResult);
 
 
+
+        // 학생 등록하기
         StudentDTO pDTO;
         List<StudentDTO> rList;
 
         pDTO = new StudentDTO();
 
-        pDTO.setUserId("hg1ee67:");
+        pDTO.setUserId("hglee67"); // hg'1'ee67라고 오타나서 에러 와우.... l => 1로....omg
         pDTO.setUserName("이협건");
         pDTO.setEmail("hglee67@kopo.ac.kr");
         pDTO.setAddr("서울");
 
-//        rList = studentService.insertStudent(pDTO);
+        rList = studentService.insertStudent(pDTO);
+
+        rList.forEach(dto -> {
+            log.info("DB에 저장된 아이디 : " + dto.getUserId());
+            log.info("DB에 저장된 이름 : " + dto.getUserName());
+            log.info("DB에 저장된 이메일 : " + dto.getEmail());
+            log.info("DB에 저장된 주소 : " + dto.getAddr()); // getUserAddr이라고 오타!!
+
+        });
+
+
+        // 학생 수정하기
+
+        pDTO = new StudentDTO();
+
+        pDTO.setUserId("hglee67"); // PK 컬럼인 회원 아이디를 기준으로 데이터를 수정함
+        pDTO.setUserName("이협건_수정");
+        pDTO.setEmail("hglee67@kopo.ac.kr_수정");
+        pDTO.setAddr("서울_수정");
+
+        rList = studentService.updateStudent(pDTO);
+
+        rList.forEach(dto -> {
+            log.info("DB에 저장된 아이디 : " + dto.getUserId());
+            log.info("DB에 저장된 이름 : " + dto.getUserName());
+            log.info("DB에 저장된 이메일 : " + dto.getEmail());
+            log.info("DB에 저장된 주소 : " + dto.getAddr());
+
+        });
+
+
+        // 여러명의 학생 한꺼번에 등록하기 (과제)
+        List<StudentDTO> pList = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            StudentDTO myDTO = new StudentDTO();
+
+            myDTO.setUserId("이유진"+String.valueOf(i));
+            myDTO.setUserName(String.valueOf(i));
+            myDTO.setEmail(String.valueOf(i));
+            myDTO.setAddr(String.valueOf(i));
+
+            pList.add(myDTO);
+        }
+
+        studentService.insertStudentList(pList);
+
+        pList.forEach(dto -> {
+            log.info("DB에 저장된 아이디 : " + dto.getUserId());
+            log.info("DB에 저장된 이름 : " + dto.getUserName());
+            log.info("DB에 저장된 이메일 : " + dto.getEmail());
+            log.info("DB에 저장된 주소 : " + dto.getAddr());
+
+        });
+
+
+
+
+
+
+        // 학생 삭제하기
+
+//        pDTO = new StudentDTO();
+//
+//        pDTO.setUserId("hglee67");
+//
+//        rList = studentService.deleteStudent(pDTO);
 //
 //        rList.forEach(dto -> {
 //            log.info("DB에 저장된 아이디 : " + dto.getUserId());
 //            log.info("DB에 저장된 이름 : " + dto.getUserName());
 //            log.info("DB에 저장된 이메일 : " + dto.getEmail());
-//            log.info("DB에 저장된 주소 : " + dto.getAddr()); // getUserAddr이라고 오타!!
+//            log.info("DB에 저장된 주소 : " + dto.getAddr());
 //
 //        });
-        studentService.deleteStudent(pDTO);
+        log.info("자바 프로그래밍 종료!!");
 
     }
+
 }

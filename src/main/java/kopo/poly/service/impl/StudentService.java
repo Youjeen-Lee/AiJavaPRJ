@@ -16,48 +16,90 @@ import java.util.Optional;
 @Service
 public class StudentService implements IStudentService {
 
-    private final IStudentMapper studentMapper;
-
+    private final IStudentMapper studentMapper; // 오라클 DB와 연결된 Mapper
     @Override
-    public List<StudentDTO> deleteStudent(StudentDTO pDTO) throws Exception {
-        log.info(this.getClass().getName() + ".deleteStudent Start!");
+    public List<StudentDTO> insertStudent(StudentDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".insertStudent Start!");
 
         Optional<StudentDTO> res = Optional.ofNullable(
                 studentMapper.getStudent(pDTO)
         );
 
-        if (res.isPresent()) {
-            studentMapper.deleteStudent(pDTO);
+        if (!res.isPresent()) {
+            studentMapper.insertStudent(pDTO);
         }
 
         List<StudentDTO> rList = Optional.ofNullable(
                 studentMapper.getStudentList()
         ). orElseGet(ArrayList::new);
 
-        log.info(this.getClass().getName() + ".deleteStudent End!");
+        log.info(this.getClass().getName() + ".insertStudent End!");
 
         return rList;
     }
 
-    public List<StudentDTO> insertStudent(StudentDTO pDTO) throws Exception {
+    @Override
+    public void insertStudentList(List<StudentDTO> pList) throws Exception {
+        log.info(this.getClass().getName() + ".insertStudentList Start!");
 
-    log.info(this.getClass().getName() + ".insertStudent Start!");
+        pList.forEach(dto -> {
+            try {
+                this.insertStudent(dto);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
-    Optional<StudentDTO> res = Optional.ofNullable(
-            studentMapper.getStudent(pDTO)
-    );
-
-    if (!res.isPresent()) {
-        studentMapper.insertStudent(pDTO);
+        });
     }
 
-    List<StudentDTO> rList = Optional.ofNullable(
-            studentMapper.getStudentList()
-    ). orElseGet(ArrayList::new);
+        @Override
+        public List<StudentDTO> updateStudent (StudentDTO pDTO) throws Exception {
+            log.info(this.getClass().getName() + ".updateStudent Start!");
 
-    log.info(this.getClass().getName() + ".insertStudent End!");
+            Optional<StudentDTO> res = Optional.ofNullable(
+                    studentMapper.getStudent(pDTO)
+            );
 
-    return rList;
-}
+            if (res.isPresent()) {
+                studentMapper.updateStudent(pDTO);
+                log.info(pDTO.getUserId() + "님이 수정되었습니다.");
+            } else {
+                log.info("회원이 존재하지 않아 수정되지 못했습니다.");
+            }
+
+            List<StudentDTO> rList = Optional.ofNullable(
+                    studentMapper.getStudentList()
+            ).orElseGet(ArrayList::new);
+
+            log.info(this.getClass().getName() + ".updateStudent End!");
+
+            return rList;
+        }
+
+        @Override
+        public List<StudentDTO> deleteStudent (StudentDTO pDTO) throws Exception {
+            log.info(this.getClass().getName() + ".deleteStudent Start!");
+
+            Optional<StudentDTO> res = Optional.ofNullable(
+                    studentMapper.getStudent(pDTO)
+            );
+
+            if (res.isPresent()) {
+                studentMapper.deleteStudent(pDTO);
+                log.info(pDTO.getUserId() + "님이 삭제되었습니다.");
+            } else {
+                log.info("회원이 존재하지 않아 삭제되지 못했습니다.");
+            }
+
+            List<StudentDTO> rList = Optional.ofNullable(
+                    studentMapper.getStudentList()
+            ).orElseGet(ArrayList::new);
+
+            log.info(this.getClass().getName() + ".deleteStudent End!");
+
+            return rList;
+        }
+
 
 }
